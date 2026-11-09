@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0d0d0d">
+  <title>Should I have caffeine?</title>
+  <meta name="description" content="How much caffeine is still in you at bedtime, and until when one more cup is fine.">
+  <meta property="og:title" content="Should I have caffeine?">
+  <meta property="og:description" content="How much caffeine is still in you at bedtime, and until when one more cup is fine.">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+</head>
+<body>
+<div id="stage">
+  <canvas id="cv" tabindex="0" aria-label="Caffeine in your body over a day. Drag cups along the time axis, click the axis to add one, click a cup to set the drink and size, double-click a cup to remove it, drag the bed line to change bedtime."></canvas>
+  <button id="modelBtn" class="btn" aria-expanded="false" aria-controls="panel">Model</button>
+
+  <div id="cupEd" hidden role="group">
+    <div class="chips" id="drinkChips"></div>
+    <div class="row">
+      <input type="range" id="qty" aria-label="Amount">
+      <output id="qtyOut"></output>
+      <button class="chip" id="rmCup">Remove</button>
+    </div>
+  </div>
+
+  <section id="panel" hidden aria-label="Model and settings">
+    <div class="sec">
+      <h2>Model</h2>
+      <p>Caffeine in the body: one-compartment pharmacokinetics with first-order absorption and elimination (Bateman function). Cups add up linearly.</p>
+      <code class="formula">A(t) = Σ D · ka/(ka−ke) · (e^(−ke·Δt) − e^(−ka·Δt))
+ke = ln2 / t½    ka = 2.7 /h  → peak ≈ 1 h after a cup</code>
+      <p class="note">Faint halo above the curve: where you would be with a 40% longer half-life.</p>
+    </div>
+
+    <div class="sec">
+      <h2>Half-life</h2>
+      <div class="row"><input type="range" id="halfLife" aria-label="Half-life in hours"><output id="halfLifeOut"></output></div>
+      <div class="chips" data-for="halfLife">
+        <button class="chip" data-v="5">Typical 5h</button>
+        <button class="chip" data-v="3">Smoker ~3h</button>
+        <button class="chip" data-v="10">On the pill ~10h</button>
+        <button class="chip" data-v="15">Pregnant, 3rd trim. ~15h</button>
+      </div>
+      <p class="note">Adults range from about 1.5 to 9.5 h (CYP1A2 genetics, liver function, medication).</p>
+    </div>
+
+    <div class="sec">
+      <h2>Drinks</h2>
+      <p>Click a cup to set what it was and how much. Typical caffeine per 100 ml:</p>
+      <p class="note" id="drinkTable"></p>
+      <p class="note">Real values vary with beans, roast and brewing; a strong filter coffee can be 2× the average. For pills or pre-workout, enter mg directly.</p>
+    </div>
+
+    <div class="sec">
+      <h2>Sleep line</h2>
+      <div class="row"><input type="range" id="threshold" aria-label="Sleep threshold in milligrams"><output id="thresholdOut"></output></div>
+      <div class="chips" data-for="threshold">
+        <button class="chip" data-v="50">Original 50</button>
+        <button class="chip" id="evChip" data-v="35">Evidence ~35</button>
+      </div>
+      <p class="note" id="evNote"></p>
+      <p class="note">The message at the bottom asks: is there room for one more cup? It finds the latest time for it that keeps you under the line from bedtime on, counting caffeine still being absorbed. Over the line, it says by when your last cup should have been.</p>
+    </div>
+
+    <div class="sec note">
+      <button class="chip" id="reset">Reset</button> · Population averages, not medical advice ·
+      <a href="https://pubmed.ncbi.nlm.nih.gov/36870101/" target="_blank" rel="noopener">Gardiner et al. 2023</a>
+    </div>
+  </section>
+</div>
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>
